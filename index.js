@@ -47,7 +47,23 @@ const client = new MongoClient(uri, {
   },
 })
 async function run() {
+  // db collection
+  const db = client.db('PlantNet')
+  const userCollection = db.collection('Users')
+
+
   try {
+    //upload user data on mongodb
+    app.post('/users', async (req, res) => {
+      const userData = req.body
+      const isExist = await userCollection.findOne({ email: userData?.email })
+      if (isExist) {
+        return res.send(isExist)
+      }
+      const result = await userCollection.insertOne(userData)
+      res.send(result)
+    })
+
     // Generate jwt token
     app.post('/jwt', async (req, res) => {
       const email = req.body
