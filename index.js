@@ -1,18 +1,17 @@
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb')
 const jwt = require('jsonwebtoken')
 const morgan = require('morgan')
 
-const port = process.env.PORT || 9000
+const port = process.env.PORT || 3000
 const app = express()
 // middleware
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'https://plant-net-1.web.app', 'https://plant-net-1.firebaseapp.com'],
   credentials: true,
-  optionSuccessStatus: 200,
 }
 app.use(cors(corsOptions))
 
@@ -60,7 +59,11 @@ async function run() {
       if (isExist) {
         return res.send(isExist)
       }
-      const result = await userCollection.insertOne(userData)
+      const result = await userCollection.insertOne({
+        ...userData,
+        role: 'customer',
+        timestamp: Date.now()
+      })
       res.send(result)
     })
 
